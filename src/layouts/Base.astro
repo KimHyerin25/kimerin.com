@@ -1,0 +1,64 @@
+---
+import '../styles/global.css';
+import { site, categories } from '../site.config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  current?: string; // 'music' | 'arts' | 'project' | 'about' | ''
+}
+
+const { title, description = site.description, current = '' } = Astro.props;
+const pageTitle = title ? `${title} — ${site.name}` : site.title;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Newsreader:ital,wght@0,400;0,500;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap row">
+        <a class="brand" href="/">{site.name}</a>
+        <nav class="nav" aria-label="주요 메뉴">
+          {categories.map((c) => (
+            <a href={`/${c.slug}`} aria-current={current === c.slug ? 'page' : undefined}>{c.label}</a>
+          ))}
+          <a href="/about" aria-current={current === 'about' ? 'page' : undefined}>About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap row">
+        <span>© {year} {site.name}</span>
+        <span class="links">
+          {site.links.map((l) => <a href={l.href} target="_blank" rel="noopener">{l.label}</a>)}
+        </span>
+      </div>
+    </footer>
+  </body>
+</html>

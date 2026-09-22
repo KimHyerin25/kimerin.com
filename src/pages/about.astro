@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config';
+---
+
+<Base title="About" current="about">
+  <section class="hero about">
+    <p class="eyebrow">About</p>
+    <h1>{site.name}</h1>
+    <p>
+      음악과 예술, 그리고 기술 사이에서 활동합니다. 이 문단은 <code>src/pages/about.astro</code>에서
+      자유롭게 고쳐 쓰세요. 학력, 경력, 수상, 전시 이력 등을 넣기 좋은 자리입니다.
+    </p>
+    <p>
+      무대 위의 보컬리스트로, 뮤지컬을 위한 작곡가로, 그리고 VR·메타버스 공간을 기획하는 작가로서
+      경계를 오가며 작업해 왔습니다.
+    </p>
+
+    <div class="contact">
+      <p class="eyebrow" style="margin-bottom:8px">Contact</p>
+      <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      <p class="muted">
+        {site.links.map((l, i) => (
+          <>
+            <a href={l.href} target="_blank" rel="noopener">{l.label}</a>{i < site.links.length - 1 ? ' · ' : ''}
+          </>
+        ))}
+      </p>
+    </div>
+  </section>
+</Base>

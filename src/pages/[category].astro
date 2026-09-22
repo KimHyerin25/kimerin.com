@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import WorkList from '../components/WorkList.astro';
+import { categories } from '../site.config';
+import { getWorks } from '../lib/works';
+
+export function getStaticPaths() {
+  return categories.map((c) => ({ params: { category: c.slug }, props: { cat: c } }));
+}
+
+const { cat } = Astro.props;
+const items = await getWorks(cat.slug);
+---
+
+<Base title={cat.label} description={cat.blurb} current={cat.slug}>
+  <section class="hero">
+    <p class="eyebrow">{cat.ko}</p>
+    <h1>{cat.label}</h1>
+    <p>{cat.blurb}</p>
+  </section>
+
+  <section class="section" style="margin-top:40px">
+    <WorkList items={items} />
+  </section>
+</Base>

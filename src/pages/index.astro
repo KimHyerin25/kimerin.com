@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import WorkList from '../components/WorkList.astro';
+import { site, categories } from '../site.config';
+import { getAllWorks } from '../lib/works';
+
+const all = await getAllWorks();
+const featured = all.filter((w) => w.data.featured).slice(0, 3);
+// Featured에 이미 보인 항목은 Recent에서 제외
+const featuredIds = new Set(featured.map((w) => `${w.collection}/${w.id}`));
+const recent = all.filter((w) => !featuredIds.has(`${w.collection}/${w.id}`)).slice(0, 8);
+---
+
+<Base>
+  <section class="hero">
+    <p class="eyebrow">Portfolio</p>
+    <h1>{site.name}</h1>
+    {site.intro.map((line) => <p>{line}</p>)}
+    <div class="cats">
+      {categories.map((c) => (
+        <a class="pill" href={`/${c.slug}`}>
+          {c.label} <span class="ko">{c.ko}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  {featured.length > 0 && (
+    <section class="section">
+      <div class="section-head">
+        <h2>Featured</h2>
+      </div>
+      <WorkList items={featured} showCategory />
+    </section>
+  )}
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Recent</h2>
+      <span class="muted" style="font-size:.875rem">최근 활동</span>
+    </div>
+    <WorkList items={recent} showCategory />
+  </section>
+</Base>

@@ -1,0 +1,69 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { categories } from '../../site.config';
+import { getWorks } from '../../lib/works';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const c of categories) {
+    const items = await getWorks(c.slug);
+    for (const entry of items) {
+      paths.push({ params: { category: c.slug, slug: entry.id }, props: { entry, cat: c } });
+    }
+  }
+  return paths;
+}
+
+const { entry, cat } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+
+const fmt = (x: Date) =>
+  `${x.getFullYear()}.${String(x.getMonth() + 1).padStart(2, '0')}.${String(x.getDate()).padStart(2, '0')}`;
+
+// YouTube 링크(watch?v=, youtu.be, embed)를 임베드 URL로 정리
+function toEmbed(url?: string) {
+  if (!url) return undefined;
+  const m = url.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/);
+  return m ? `https://www.youtube.com/embed/${m[1]}` : url;
+}
+const embed = toEmbed(d.video);
+---
+
+<Base title={d.title} description={d.summary} current={cat.slug}>
+  <article>
+    <header class="article-head">
+      <p class="eyebrow"><a href={`/${cat.slug}`}>{cat.label}</a></p>
+      <h1>{d.title}</h1>
+      <p class="muted" style="margin:0 0 14px">{d.summary}</p>
+      <div class="facts">
+        <time datetime={d.date.toISOString()}>{fmt(d.date)}</time>
+        {d.role && <span>{d.role}</span>}
+        {d.link && <a href={d.link} target="_blank" rel="noopener">외부 링크 ↗</a>}
+      </div>
+    </header>
+
+    {embed && (
+      <div class="video">
+        <iframe src={embed} title={d.title} loading="lazy" allowfullscreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" />
+      </div>
+    )}
+    {!embed && d.cover && (
+      <div class="cover"><img src={d.cover} alt={d.title} loading="lazy" /></div>
+    )}
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {d.tags.length > 0 && (
+      <div class="tags" style="margin-top:32px">
+        {d.tags.map((t) => <span class="tag">{t}</span>)}
+      </div>
+    )}
+
+    <a class="back" href={`/${cat.slug}`}>← {cat.label} 목록으로</a>
+  </article>
+</Base>

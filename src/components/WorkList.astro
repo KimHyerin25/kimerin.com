@@ -1,0 +1,57 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { categories } from '../site.config';
+
+type Entry =
+  | CollectionEntry<'music'>
+  | CollectionEntry<'arts'>
+  | CollectionEntry<'project'>;
+
+interface Props {
+  items: Entry[];
+  showCategory?: boolean;
+}
+
+const { items, showCategory = false } = Astro.props;
+
+const fmt = (d: Date) =>
+  `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}`;
+
+const labelOf = (slug: string) => categories.find((c) => c.slug === slug)?.label ?? slug;
+---
+
+{items.length === 0 ? (
+  <p class="empty">아직 등록된 항목이 없습니다.</p>
+) : (
+  <ul class="card-grid">
+    {items.map((it) => (
+      <li class={`card cat-${it.collection}`}>
+        <a href={`/${it.collection}/${it.id}`} class="card-link">
+          <div class="card-media">
+            {it.data.cover ? (
+              <img src={it.data.cover} alt={it.data.title} loading="lazy" />
+            ) : (
+              <div class="card-placeholder" aria-hidden="true">
+                <span>{labelOf(it.collection)}</span>
+              </div>
+            )}
+          </div>
+          <div class="card-body">
+            <div class="meta">
+              <time datetime={it.data.date.toISOString()}>{fmt(it.data.date)}</time>
+              {showCategory && <span class="cat">{labelOf(it.collection)}</span>}
+              {it.data.role && <span class="role">{it.data.role}</span>}
+            </div>
+            <h3>{it.data.title}</h3>
+            <p class="summary">{it.data.summary}</p>
+            {it.data.tags.length > 0 && (
+              <div class="tags">
+                {it.data.tags.map((t) => <span class="tag">{t}</span>)}
+              </div>
+            )}
+          </div>
+        </a>
+      </li>
+    ))}
+  </ul>
+)}
