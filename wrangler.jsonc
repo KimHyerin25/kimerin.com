@@ -4,6 +4,8 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "kimerin",
   "compatibility_date": "2026-09-01",
+  // `wrangler deploy` 가 배포 전에 항상 Astro 빌드를 먼저 실행하도록 함 (대시보드 Build command 비어 있어도 OK)
+  "build": { "command": "npm run build" },
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page",
