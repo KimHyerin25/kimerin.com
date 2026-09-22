@@ -105,17 +105,20 @@ push하면 아래 4번에서 연결한 Cloudflare가 자동으로 새 버전을 
   국내 카드도 해외결제 가능한 카드면 됩니다. 1년마다 자동 갱신(끄기 가능).
 - 해외결제가 어렵다면 **가비아(gabia.com)** 에서 구매 후 → 4-3의 "다른 곳에서 산 도메인" 방법으로 연결.
 
-### 4-2. 호스팅 — 무료
-1. Cloudflare 대시보드 → **Workers & Pages → Create → Pages → Connect to Git**
-2. GitHub 로그인 후 `kimerin.com` 저장소 선택
-3. 빌드 설정:
-   - **Framework preset**: Astro
-   - **Build command**: `npm run build`
-   - **Build output directory**: `dist`
-4. **Save and Deploy** → 1~2분 후 `xxx.pages.dev` 임시 주소로 사이트가 열립니다.
+### 4-2. 호스팅 — 무료 (Workers 방식, 현재 사용 중)
+Cloudflare 대시보드의 "Connect to Git"은 기본으로 **Workers** 프로젝트를 만듭니다. 레포에 있는 `wrangler.jsonc`가
+`dist` 폴더를 정적 에셋으로 배포하도록 설정돼 있으니, 대시보드에서 **빌드 명령만** 넣어주면 됩니다.
+
+1. Workers & Pages → `kimerin` 프로젝트 → **Settings → Build** (또는 Build configuration)
+2. **Build command**: `npm run build`  ← 이게 비어 있으면 "Could not detect a directory containing static files" 에러가 납니다
+3. **Deploy command**: `npx wrangler deploy` (기본값 그대로)
+4. 저장 후 **Deployments → Retry deployment** (또는 새로 push) → 1~2분 뒤 `kimerin.<계정>.workers.dev` 주소로 열립니다.
+
+(예전 방식인 Pages 프로젝트로 만들 경우: Framework preset **Astro**, Build command `npm run build`, Output directory `dist`.)
 
 ### 4-3. 도메인 연결
-- Pages 프로젝트 → **Custom domains → Set up a custom domain** → `kimerin.com` 입력 → Activate
+- 프로젝트 → **Settings → Domains & Routes → Add → Custom domain** → `kimerin.com` 입력 → Add domain
+  (Pages 프로젝트라면 **Custom domains → Set up a custom domain**)
 - 같은 방법으로 `www.kimerin.com` 도 추가 (www로 들어와도 열리게)
 - 도메인이 Cloudflare에 있으면 DNS 레코드가 **자동으로 추가**되고 몇 분 내 HTTPS까지 완료됩니다.
 
